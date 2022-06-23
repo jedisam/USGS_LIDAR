@@ -61,6 +61,7 @@ class LoadData:
                 self.logger.error("Error loading file")
             if res:
                 x = {
+                    "region": "".join(self.regions[str(ind + 1)].split("_")[:-1]),
                     "year": self.regions[str(ind + 1)].split("_")[-1],
                     "xmin": res["bounds"][0],
                     "xmax": res["bounds"][3],
@@ -70,45 +71,9 @@ class LoadData:
                     "zmax": res["bounds"][5],
                     "points": res["points"],
                 }
-                # pd.concat(
-                #     [
-                #         self.df,
-                #         pd.DataFrame(
-                #             [
-                #                 {
-                #                     "region": "".join(
-                #                         self.regions[str(ind + 1)].split("_")[:-1]
-                #                     ),
-                #                     "year": self.regions[str(ind + 1)].split("_")[-1],
-                #                     "xmin": res["bounds"][0],
-                #                     "xmax": res["bounds"][3],
-                #                     "ymin": res["bounds"][1],
-                #                     "ymax": res["bounds"][4],
-                #                     "zmin": res["bounds"][2],
-                #                     "zmax": res["bounds"][5],
-                #                     "points": res["points"],
-                #                 }
-                #             ]
-                #         ),
-                #     ],
-                #     ignore_index=True,
-                # )
+
                 data.append(x)
                 self.bar.next()
-                # self.df = self.df.concat(
-                #     {
-                #         "region": "".join(self.regions[str(ind + 1)].split("_")[:-1]),
-                #         "year": self.regions[str(ind + 1)].split("_")[-1],
-                #         "xmin": res["bounds"][0],
-                #         "xmax": res["bounds"][3],
-                #         "ymin": res["bounds"][1],
-                #         "ymax": res["bounds"][4],
-                #         "zmin": res["bounds"][2],
-                #         "zmax": res["bounds"][5],
-                #         "points": res["points"],
-                #     }
-                # )
-
             else:
                 pass
         self.df = pd.DataFrame(data)
