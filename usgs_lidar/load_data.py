@@ -4,13 +4,10 @@ import json
 import sys
 from urllib.request import urlopen
 
+import pandas as pd
 from progress.bar import Bar
 
-import pandas as pd
-
 from logger import Logger
-
-# import pdal
 
 
 class LoadData:
@@ -61,7 +58,7 @@ class LoadData:
                 self.logger.error("Error loading file")
             if res:
                 x = {
-                    "region": "".join(self.regions[str(ind + 1)].split("_")[:-1]),
+                    "region": "".join(self.regions[str(ind + 1)]),
                     "year": self.regions[str(ind + 1)].split("_")[-1],
                     "xmin": res["bounds"][0],
                     "xmax": res["bounds"][3],

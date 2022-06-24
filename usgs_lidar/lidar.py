@@ -52,23 +52,20 @@ class Lidar:
             print(e)
             self.logger.error("error loading pipeline")
 
-    def get_elevation(self, bounds):
+    def get_elevation(self, bounds) -> None:
         """Get elevation from an array generated in the pipeline.
 
         Args:
             bounds (list): bound of the polygon
-
-        Returns:
-            _type_: _description_
         """
         arrays = self.get_lidar(bounds)
         for i in arrays:
             geometry_points = [Point(x, y) for x, y in zip(i["X"], i["Y"])]
             elevetions = i["Z"]
-            df = gpd.GeoDataFrame(columns=["elevation", "geometry"])
-            df["elevation"] = elevetions
-            df["geometry"] = geometry_points
-            df.set_geometry("geometry", inplace=True)
+            df = gpd.GeoDataFrame(columns=["elevation_m", "Geometry"])
+            df["elevation_m"] = elevetions
+            df["Geometry"] = geometry_points
+            df.set_geometry("Geometry", inplace=True)
             df.set_crs(4326, inplace=True)
             df.to_csv("../data/geo.csv")
 
