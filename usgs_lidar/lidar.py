@@ -32,6 +32,7 @@ class Lidar:
         """Load pipeline and get bounds for the region."""
 
         f_name = self.data_path + self.region + "/ept.json"
+        self.logger.info("Getting lidar data json.")
         try:
 
             with open(self.pipeline_path) as f:
@@ -57,7 +58,11 @@ class Lidar:
 
         Args:
             bounds (list): bound of the polygon
+        
+        Returns:
+            None
         """
+        self.logger.info("Getting elevation for each point.")
         arrays = self.get_lidar(bounds)
         for i in arrays:
             geometry_points = [Point(x, y) for x, y in zip(i["X"], i["Y"])]
@@ -67,7 +72,9 @@ class Lidar:
             df["Geometry"] = geometry_points
             df.set_geometry("Geometry", inplace=True)
             df.set_crs(4326, inplace=True)
-            df.to_csv("../data/geo.csv")
+            df.to_file("../data/geo.geojson", driver="GeoJSON")
+            # df.to_csv("../data/geo.csv")
+            self.logger.info("Saved geogson object.")
 
 
 if __name__ == "__main__":
