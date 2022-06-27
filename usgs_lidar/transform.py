@@ -1,7 +1,9 @@
+"""A set for transformation calculating TWI, standardization."""
 import geopandas as gpd
 import numpy as np
 from scipy.interpolate import griddata
 from shapely.geometry import Point
+from matplotlib.tri import Triangulation, LinearTriInterpolator
 
 from logger import Logger
 
@@ -139,3 +141,67 @@ class Transform:
 
         return g_df.to_crs(data.crs)
 
+    def standardize(self, data, resolution):
+        """Standardize and interpolate dataframe
+        Args:
+            data (GeoDataFrame): Dataframe to be standardized
+            resolution (int): Resolution of the standardization
+        Returns:
+            GeoDataFrame: Returns the interpolated and standardized dataframe
+        """
+
+        self.logger.info("Standardizing...")
+
+        data_meters = data.to_crs({"init": "epsg:3395"})
+
+        rasterRes = resolution
+
+        totalPointsArray = np.zeros([data_meters.shape[0], 3])
+        for index, point in data_meters.iterrows():
+            pointArray = np.array(
+                [
+                    point.geometry.coords.xy[0][0],
+                    point.geometry.coords.xy[1][0],
+                    point["elevation"],
+                ]
+            )
+            totalPointsArray[index] = pointArray
+        xCoords = np.arange(
+            totalPointsArray[:, 0].min(),
+            totalPointsArray[:, 0].max() + rasterRes,
+            rasterRes,
+        )
+        yCoords = np.arange(
+            totalPointsArray[:, 1].min(),
+            totalPointsArray[:, 1].max() + rasterRes,
+            rasterRes,
+        )
+        zCoords = np.zeros([yCoords.shape[0], xCoords.shape[0]])
+        polygons = []
+        elevations = []
+
+        self.logger.info("Grid Created Proceeding to interpolation")
+        triFn = Triangulation(totalPointsArray[:, 0], totalPointsArray[:, 1])
+        # linear triangule interpolator funtion
+        linTriFn = LinearTriInterpolator(triFn, totalPointsArray[:, 2])
+        # loop among each cell in the raster extension
+        for indexX, x in np.ndenumerate(xCoords):
+            for indexY, y in np.ndenumerate(yCoords):
+                tempZ = linTriFn(x, y)
+                # filtering masked values
+                if tempZ == tempZ:
+                    zCoords[indexY, indexX] = tempZ
+
+                    polygons.append(Point(x, y))
+                    elevations.append(float(tempZ.data[()]))
+                else:
+                    zCoords[indexY, indexX] = np.nan
+        self.logger.info("Interploation Completed")
+        frame = gpd.GeoDataFrame(columns=["elevation", "geometry"])
+        frame["elevation"] = elevations
+        frame["geometry"] = polygons
+        frame.set_geometry("geometry", inplace=True)
+        frame.set_crs(crs=data_meters.crs, inplace=True)
+
+        self.logger.info("Successfully Standardized dataframe.")
+        return frame.to_crs(data.crs)
