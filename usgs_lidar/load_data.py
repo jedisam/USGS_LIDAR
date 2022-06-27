@@ -4,13 +4,10 @@ import json
 import sys
 from urllib.request import urlopen
 
+import pandas as pd
 from progress.bar import Bar
 
-import pandas as pd
-
 from logger import Logger
-
-# import pdal
 
 
 class LoadData:
@@ -48,55 +45,38 @@ class LoadData:
         # Get the regions
         self.get_regions()
         # print(len(self.regions))
-        try:
-            self.logger.info("Started loading metadata...")
-            for ind in range(len(self.regions)):
+        data = []
+        for ind in range(len(self.regions)):
+            try:
+                self.logger.info("Started loading metadata...")
                 # print(self.regions[str(ind + 1)])
                 end_pt = self.data_path + self.regions[str(ind + 1)] + "/ept.json"
                 res = json.loads(urlopen(end_pt).read())
-                pd.concat(
-                    [
-                        self.df,
-                        pd.DataFrame(
-                            [
-                                {
-                                    "region": "".join(
-                                        self.regions[str(ind + 1)].split("_")[:-1]
-                                    ),
-                                    "year": self.regions[str(ind + 1)].split("_")[-1],
-                                    "xmin": res["bounds"][0],
-                                    "xmax": res["bounds"][3],
-                                    "ymin": res["bounds"][1],
-                                    "ymax": res["bounds"][4],
-                                    "zmin": res["bounds"][2],
-                                    "zmax": res["bounds"][5],
-                                    "points": res["points"],
-                                }
-                            ]
-                        ),
-                    ],
-                    ignore_index=True,
-                )
+            except Exception as e:
+                print("The status: ", res)
+                print(e)
+                self.logger.error("Error loading file")
+            if res:
+                x = {
+                    "region": "".join(self.regions[str(ind + 1)]),
+                    "year": self.regions[str(ind + 1)].split("_")[-1],
+                    "xmin": res["bounds"][0],
+                    "xmax": res["bounds"][3],
+                    "ymin": res["bounds"][1],
+                    "ymax": res["bounds"][4],
+                    "zmin": res["bounds"][2],
+                    "zmax": res["bounds"][5],
+                    "points": res["points"],
+                }
+
+                data.append(x)
                 self.bar.next()
-                # self.df = self.df.concat(
-                #     {
-                #         "region": "".join(self.regions[str(ind + 1)].split("_")[:-1]),
-                #         "year": self.regions[str(ind + 1)].split("_")[-1],
-                #         "xmin": res["bounds"][0],
-                #         "xmax": res["bounds"][3],
-                #         "ymin": res["bounds"][1],
-                #         "ymax": res["bounds"][4],
-                #         "zmin": res["bounds"][2],
-                #         "zmax": res["bounds"][5],
-                #         "points": res["points"],
-                #     }
-                # )
-            self.bar.finish()
-            self.logger.info("Successfully loaded metadata.")
-            self.save_csv("../data/metadata.csv")
-        except Exception as e:
-            print(e)
-            self.logger.error("Error loading file")
+            else:
+                pass
+        self.df = pd.DataFrame(data)
+        self.bar.finish()
+        self.logger.info("Successfully loaded metadata.")
+        self.save_csv("../data/metadata.csv")
 
     def save_csv(self, path) -> None:
         """Save dataframe as a csv.
@@ -107,6 +87,7 @@ class LoadData:
         try:
             self.df.to_csv(path, index=False)
         except Exception as e:
+            print(e)
             self.logger.error("Failed to save file to csv")
 
 

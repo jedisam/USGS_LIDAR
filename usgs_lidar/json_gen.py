@@ -1,4 +1,5 @@
 """Generate json data."""
+# aws s3 ls s3://usgs-lidar-public/ --no-sign-request
 
 import json
 
