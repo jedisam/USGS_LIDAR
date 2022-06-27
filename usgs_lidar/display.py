@@ -1,6 +1,4 @@
-import rasterio
-from rasterio.plot import show
-from rasterio.plot import show_hist
+"""Visualiztion of dataframe."""
 import matplotlib.pyplot as plt
 import geopandas as gpd
 import laspy as lp
