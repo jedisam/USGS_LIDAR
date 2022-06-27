@@ -14,7 +14,7 @@ def plot_3d(df) -> None:
     """Plot 3d map of input dataframe.
 
     Args:
-    Arguments (GeoDataFRame): GeoDataframe to be displayed.
+        (GeoDataFRame): GeoDataframe to be displayed.
     return: None
 
     """
