@@ -35,13 +35,21 @@ class LoadData:
             sys.exit(1)
 
     def get_regions(self) -> None:
-        """Get the regions data from a json file."""
+        """
+        Get the regions data from a json file.
+        
+        return: None
+        """
         with open("regions.json", "r") as f:
             self.regions = json.load(f)
             self.bar = Bar("Loading MetaData", max=len(self.regions))
 
     def get_data(self) -> None:
-        """Get boundaries of the data."""
+        """
+        Get boundaries of the data.
+        
+        return: None
+        """
         # Get the regions
         self.get_regions()
         # print(len(self.regions))
@@ -83,6 +91,9 @@ class LoadData:
 
         Args:
             path (str): path of the csv file
+            
+        return:
+            None
         """
         try:
             self.df.to_csv(path, index=False)
