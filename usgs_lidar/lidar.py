@@ -7,9 +7,6 @@ import pandas as pd
 from shapely.geometry import Polygon, Point
 import matplotlib.pyplot as plt
 import pdal
-import rasterio
-from rasterio.plot import show
-from rasterio.plot import show_hist
 
 from logger import Logger
 
@@ -54,7 +51,8 @@ class Lidar:
             self.logger.error("error loading pipeline")
 
     def get_elevation(self, bounds) -> None:
-        """Get elevation from an array generated in the pipeline.
+        """
+        Get elevation from an array generated in the pipeline.
 
         Args:
             bounds (list): bound of the polygon
