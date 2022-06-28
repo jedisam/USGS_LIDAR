@@ -26,7 +26,13 @@ class Lidar:
         # pass
 
     def get_lidar(self, bounds: list) -> None:
-        """Load pipeline and get bounds for the region."""
+        """
+        Load pipeline and get bounds for the region.
+        Args:
+            bounds (list): Bounds list.
+        return: None
+        
+        """
 
         f_name = self.data_path + self.region + "/ept.json"
         self.logger.info("Getting lidar data json.")
