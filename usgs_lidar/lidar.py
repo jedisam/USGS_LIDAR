@@ -12,11 +12,11 @@ from logger import Logger
 
 
 class Lidar:
-    def __init__(self, region) -> None:
+    def __init__(self, region, pipeline) -> None:
         """Initialize Lidar Data."""
         self.logger = Logger("load_data.log").get_app_logger()
         self.logger.info("Successfully Instantiated Lidar Class Object")
-        self.pipeline_path = "./pipeline.json"
+        self.pipeline_path = pipeline
         self.data_path = "https://s3-us-west-2.amazonaws.com/usgs-lidar-public/"
         self.input_epsg = "EPSG: 3857"
         self.output_epsg = "EPSG: 4326"

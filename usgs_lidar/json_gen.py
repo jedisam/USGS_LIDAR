@@ -11,7 +11,7 @@ class DataGen:
         self.logger = Logger("data_gen.log").get_app_logger()
         self.logger.info("Successfully Instantiated Data_gen Class Object")
 
-    def generate_json(self, dest) -> None:
+    def generate_json(self, source, dest) -> None:
         """
         Generate json data of all regions.
         
@@ -22,7 +22,7 @@ class DataGen:
             None
         """
         dict_reg = {}
-        with open("rg_year.txt", "r") as f:
+        with open(source, "r") as f:
             ind = 1
             for line in f:
                 dict_reg[ind] = line.replace(" ", "").replace('"', "").replace("\n", "")

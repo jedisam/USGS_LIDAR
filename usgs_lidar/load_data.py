@@ -34,24 +34,27 @@ class LoadData:
             self.logger.exception("Failed to Instantiate Preprocessing Class Object")
             sys.exit(1)
 
-    def get_regions(self) -> None:
+    def get_regions(self, regions) -> None:
         """
         Get the regions data from a json file.
         
         return: None
         """
-        with open("regions.json", "r") as f:
+        with open(regions, "r") as f:
             self.regions = json.load(f)
             self.bar = Bar("Loading MetaData", max=len(self.regions))
 
-    def get_data(self) -> None:
+    def get_data(self, regions) -> None:
         """
         Get boundaries of the data.
+        
+        Args:
+            regions(str): path to regions json file
         
         return: None
         """
         # Get the regions
-        self.get_regions()
+        self.get_regions(regions)
         # print(len(self.regions))
         data = []
         for ind in range(len(self.regions)):
